@@ -1,51 +1,67 @@
-import React from 'react';
+import { useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import DataDeletion from './pages/DataDeletion';
 
 function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
+  const scrollTo = (id) => {
+    closeMenu();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="app">
+      {/* Navigation */}
       <nav className="glass-nav">
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link to="/" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', textDecoration: 'none' }}>Bienhecha</Link>
-          <div style={{ display: 'flex', gap: '2rem' }}>
-            <Link to="/#servicios" style={{ textDecoration: 'none', color: 'var(--text-main)', fontWeight: '500' }}>Servicios</Link>
-            <Link to="/#sobre-nosotros" style={{ textDecoration: 'none', color: 'var(--text-main)', fontWeight: '500' }}>Sobre Nosotros</Link>
-            <Link to="/#contacto" style={{ textDecoration: 'none', color: 'var(--text-main)', fontWeight: '500' }}>Contacto</Link>
+        <div className="container nav-inner">
+          <Link to="/" className="nav-logo" onClick={closeMenu}>Bienhecha</Link>
+
+          <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+            <span style={menuOpen ? { transform: 'rotate(45deg) translate(5px, 5px)' } : {}} />
+            <span style={menuOpen ? { opacity: 0 } : {}} />
+            <span style={menuOpen ? { transform: 'rotate(-45deg) translate(5px, -5px)' } : {}} />
+          </button>
+
+          <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
+            <a href="#servicios" onClick={() => scrollTo('servicios')}>Servicios</a>
+            <a href="#demo" onClick={() => scrollTo('demo')}>Demo</a>
+            <a href="#proceso" onClick={() => scrollTo('proceso')}>Proceso</a>
+            <a href="#contacto" onClick={() => scrollTo('contacto')}>Contacto</a>
+            <a href="#contacto" onClick={() => scrollTo('contacto')} className="btn btn-primary nav-cta">
+              Presupuesto Gratis
+            </a>
           </div>
         </div>
       </nav>
 
+      {/* Routes */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/politica-privacidad" element={<PrivacyPolicy />} />
         <Route path="/eliminacion-datos" element={<DataDeletion />} />
       </Routes>
 
+      {/* Footer */}
       <footer>
         <div className="container">
-          <div className="footer-grid">
-            <div>
-              <h4 className="mb-4">Bienhecha</h4>
-              <p className="text-muted">Transformando la gestión de servicios con inteligencia y elegancia.</p>
+          <div className="footer-top">
+            <div className="footer-brand">
+              <Link to="/" className="nav-logo">Bienhecha</Link>
+              <p>Desarrollo web y automatización inteligente para negocios que quieren crecer.</p>
             </div>
-            <div>
-              <h4 className="mb-4">Enlaces</h4>
-              <ul style={{ listStyle: 'none', padding: 0, color: 'var(--text-muted)' }}>
-                <li><Link to="/#servicios" style={{ color: 'inherit', textDecoration: 'none' }}>Servicios</Link></li>
-                <li><Link to="/#sobre-nosotros" style={{ color: 'inherit', textDecoration: 'none' }}>Sobre Nosotros</Link></li>
-                <li><Link to="/#contacto" style={{ color: 'inherit', textDecoration: 'none' }}>Contacto</Link></li>
-              </ul>
+            <div className="footer-links">
+              <Link to="/politica-privacidad">Política de Privacidad</Link>
+              <Link to="/eliminacion-datos">Eliminación de Datos</Link>
             </div>
           </div>
-          <div className="legal-info">
-            <div>© 2024 Bienhecha Servicios Profesionales S.L. Todos los derechos reservados.</div>
-            <div style={{ display: 'flex', gap: '2rem' }}>
-              <Link to="/politica-privacidad" style={{ color: 'inherit', textDecoration: 'none' }}>Política de Privacidad</Link>
-              <Link to="/eliminacion-datos" style={{ color: 'inherit', textDecoration: 'none' }}>Eliminación de Datos</Link>
-            </div>
+          <div className="footer-bottom">
+            © {new Date().getFullYear()} Bienhecha Servicios Profesionales S.L. Todos los derechos reservados.
           </div>
         </div>
       </footer>
