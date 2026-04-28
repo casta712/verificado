@@ -26,7 +26,7 @@ export default function ContactForm() {
         </div>
         <h3>¡Mensaje Enviado!</h3>
         <p>Te responderemos lo antes posible.</p>
-        <button className="btn btn-outline" style={{ marginTop: '1rem' }} onClick={() => setSent(false)}>
+        <button className="btn btn-outline" style={{ marginTop: '1rem' }} onClick={() => { setSent(false); setForm({ name: '', email: '', project: '', message: '' }); }}>
           Enviar otro mensaje
         </button>
       </div>
