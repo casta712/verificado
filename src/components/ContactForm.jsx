@@ -1,22 +1,42 @@
 import { useState } from 'react';
 
+const INITIAL = { name: '', email: '', project: '', message: '' };
+
 export default function ContactForm() {
-  const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', project: '', message: '' });
+  const [form, setForm] = useState({ ...INITIAL });
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Nuevo proyecto: ${form.project || 'Consulta'}`);
-    const body = encodeURIComponent(
-      `Nombre: ${form.name}\nEmail: ${form.email}\nTipo: ${form.project}\n\nMensaje:\n${form.message}`
-    );
-    window.open(`mailto:casacastillo712@hotmail.com?subject=${subject}&body=${body}`, '_self');
-    setSent(true);
+    setStatus('sending');
+
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/casacastillo712@hotmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          Nombre: form.name,
+          Email: form.email,
+          'Tipo de Proyecto': form.project,
+          Mensaje: form.message,
+          _subject: `Nuevo presupuesto: ${form.project || 'Consulta'}`,
+        }),
+      });
+
+      if (res.ok) {
+        setStatus('sent');
+        setForm({ ...INITIAL });
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   };
 
-  if (sent) {
+  if (status === 'sent') {
     return (
       <div className="form-success">
         <div className="form-success-icon">
@@ -26,7 +46,7 @@ export default function ContactForm() {
         </div>
         <h3>¡Mensaje Enviado!</h3>
         <p>Te responderemos lo antes posible.</p>
-        <button className="btn btn-outline" style={{ marginTop: '1rem' }} onClick={() => { setSent(false); setForm({ name: '', email: '', project: '', message: '' }); }}>
+        <button className="btn btn-outline" style={{ marginTop: '1rem' }} onClick={() => setStatus('idle')}>
           Enviar otro mensaje
         </button>
       </div>
@@ -58,9 +78,14 @@ export default function ContactForm() {
         <label htmlFor="contact-message">Mensaje</label>
         <textarea id="contact-message" name="message" placeholder="Cuéntanos sobre tu proyecto..." required value={form.message} onChange={handleChange} />
       </div>
-      <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-        Solicitar Presupuesto
+      <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={status === 'sending'}>
+        {status === 'sending' ? 'Enviando...' : 'Solicitar Presupuesto'}
       </button>
+      {status === 'error' && (
+        <p style={{ color: '#f43f5e', fontSize: '0.85rem', textAlign: 'center' }}>
+          Error al enviar. Inténtalo de nuevo o escríbenos a casacastillo712@hotmail.com
+        </p>
+      )}
     </form>
   );
 }
