@@ -24,7 +24,7 @@ function PrivacyPolicy() {
             <li className="mb-2"><strong>NIF:</strong> Z0506671D</li>
             <li className="mb-2"><strong>Domicilio:</strong> Calle Fray Juan Regla 13, Zaragoza, España</li>
             <li className="mb-2"><strong>Correo electrónico:</strong> casacastillo712@hotmail.com</li>
-            <li className="mb-2"><strong>Sitio web:</strong> www.cashercomidabienhecha.com</li>
+            <li className="mb-2"><strong>Sitio web:</strong> www.casherbienhecha.com</li>
           </ul>
         </div>
 
@@ -257,7 +257,7 @@ function PrivacyPolicy() {
           <ul className="text-muted" style={{ paddingLeft: '1.5rem', listStyle: 'none' }}>
             <li className="mb-2">📧 <strong>Correo electrónico:</strong> casacastillo712@hotmail.com</li>
             <li className="mb-2">📍 <strong>Dirección postal:</strong> Calle Fray Juan Regla 13, Zaragoza, España</li>
-            <li className="mb-2">🌐 <strong>Sitio web:</strong> www.cashercomidabienhecha.com</li>
+            <li className="mb-2">🌐 <strong>Sitio web:</strong> www.casherbienhecha.com</li>
           </ul>
         </div>
 
