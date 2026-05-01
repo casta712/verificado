@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import DataDeletion from './pages/DataDeletion';
+import ChatbotWidget from './components/ChatbotWidget';
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -65,6 +66,9 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Chatbot Flotante */}
+      <ChatbotWidget />
     </div>
   );
 }
