@@ -233,7 +233,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </main>
+
       {/* ── FOOTER DATOS FISCALES ── */}
       <footer className="section-dark" style={{ padding: '2rem 0', background: '#18181b', color: '#fff', textAlign: 'center' }}>
         <div className="container" style={{ fontSize: '1rem', lineHeight: '1.7' }}>
@@ -245,5 +245,6 @@ export default function Home() {
           <strong>Celular:</strong> +1 6678952541
         </div>
       </footer>
+    </main>
   );
 }
