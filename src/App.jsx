@@ -62,7 +62,9 @@ function App() {
             </div>
           </div>
           <div className="footer-bottom">
-            © {new Date().getFullYear()} Bienhecha Servicios Profesionales S.L. Todos los derechos reservados.
+            © {new Date().getFullYear()} Fren Alejandro Castaño Castillo • RUT: 1130622479-6 • Colombia, Cali • Cl 12 # 31-03 Barrio Colseguros • +1 6678952541
+
+            Bienhecha Servicios Profesionales S.L. Todos los derechos reservados.
           </div>
         </div>
       </footer>

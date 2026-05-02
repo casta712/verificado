@@ -244,9 +244,7 @@ export default function Home() {
         fontSize: '0.85rem',
         lineHeight: '1.6'
       }}>
-        <div className="container">
-          <strong style={{ color: 'var(--dark-text)' }}>Fren Alejandro Castaño Castillo</strong> • RUT: 1130622479-6 • Colombia, Cali • Cl 12 # 31-03 Barrio Colseguros • +1 6678952541
-        </div>
+        
       </footer>
     </main>
   );
