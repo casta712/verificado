@@ -235,14 +235,17 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER DATOS FISCALES ── */}
-      <footer className="section-dark" style={{ padding: '2rem 0', background: '#18181b', color: '#fff', textAlign: 'center' }}>
-        <div className="container" style={{ fontSize: '1rem', lineHeight: '1.7' }}>
-          <strong>Registro Único Tributario:</strong> Fren Alejandro Castaño Castillo<br />
-          <strong>RUT:</strong> 1130622479-6<br />
-          <strong>País:</strong> Colombia<br />
-          <strong>Ciudad:</strong> Cali<br />
-          <strong>Dirección:</strong> Cl 12 # 31-03 Barrio Colseguros<br />
-          <strong>Celular:</strong> +1 6678952541
+      <footer style={{ 
+        background: 'var(--dark-bg-alt)', 
+        color: 'var(--dark-muted)', 
+        padding: '1.5rem 0',
+        borderTop: '1px solid var(--dark-border)',
+        textAlign: 'center',
+        fontSize: '0.85rem',
+        lineHeight: '1.6'
+      }}>
+        <div className="container">
+          <strong style={{ color: 'var(--dark-text)' }}>Fren Alejandro Castaño Castillo</strong> • RUT: 1130622479-6 • Colombia, Cali • Cl 12 # 31-03 Barrio Colseguros • +1 6678952541
         </div>
       </footer>
     </main>
