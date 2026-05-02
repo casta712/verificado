@@ -1,95 +1,112 @@
 import { useState, useEffect, useRef } from 'react';
 import './ChatbotWidget.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { text: '¡Hola! Soy Jose, el asistente virtual de Bienhecha. ¿En qué te puedo ayudar hoy? ¿Deseas información o agendar una cita?', sender: 'bot' }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [sessionId, setSessionId] = useState('');
-  
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const hasSynced = useRef(false);
 
-  // Inicializar o recuperar SessionId
+  // Inicializar o recuperar sessionId
   useEffect(() => {
-    let storedSessionId = localStorage.getItem('chatSessionId');
-    if (!storedSessionId) {
-      storedSessionId = crypto.randomUUID ? crypto.randomUUID() : 'sess-' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('chatSessionId', storedSessionId);
+    let stored = localStorage.getItem('chatSessionId');
+    if (!stored) {
+      stored = crypto.randomUUID ? crypto.randomUUID() : 'sess-' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('chatSessionId', stored);
     }
-    setSessionId(storedSessionId);
+    setSessionId(stored);
   }, []);
 
-  // Hacer scroll automático hacia abajo
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // Al abrir el chat por primera vez, sincronizar con el servidor
+  // para obtener el saludo real y asegurarse de que el estado del backend es correcto.
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping, isOpen]);
+    if (isOpen && sessionId && !hasSynced.current) {
+      hasSynced.current = true;
+      syncWithServer();
+    }
+  }, [isOpen, sessionId]);
 
-  // Manejar apertura de chat
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 300);
+  const syncWithServer = async () => {
+    setIsTyping(true);
+    try {
+      const res = await fetch(`${API_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, message: 'hola' }),
+      });
+      const data = await res.json();
+      setIsTyping(false);
+      if (data.replies && Array.isArray(data.replies)) {
+        setMessages(data.replies.map(text => ({ text, sender: 'bot' })));
+      }
+    } catch {
+      setIsTyping(false);
+      setMessages([{
+        text: '¡Hola! Soy Jose, el asistente virtual de Bienhecha. ¿En qué te puedo ayudar hoy?',
+        sender: 'bot',
+      }]);
     }
   };
 
-  // Enviar mensaje
+  // Scroll automático hacia abajo
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => { scrollToBottom(); }, [messages, isTyping, isOpen]);
+
+  const toggleChat = () => {
+    const next = !isOpen;
+    setIsOpen(next);
+    if (next) setTimeout(() => inputRef.current?.focus(), 300);
+  };
+
   const sendMessage = async () => {
     const text = inputValue.trim();
     if (!text) return;
 
-    // Agregar mensaje del usuario a la vista
-    setMessages((prev) => [...prev, { text, sender: 'user' }]);
+    setMessages(prev => [...prev, { text, sender: 'user' }]);
     setInputValue('');
     setIsTyping(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      const response = await fetch(`${apiUrl}/api/chat`, {
+      const res = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ sessionId, message: text })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, message: text }),
       });
-
-      const data = await response.json();
+      const data = await res.json();
       setIsTyping(false);
 
       if (data.replies && Array.isArray(data.replies)) {
-        const botMessages = data.replies.map(reply => ({ text: reply, sender: 'bot' }));
-        setMessages((prev) => [...prev, ...botMessages]);
+        setMessages(prev => [...prev, ...data.replies.map(t => ({ text: t, sender: 'bot' }))]);
       } else if (data.error) {
-        setMessages((prev) => [...prev, { text: `Error: ${data.error}`, sender: 'bot' }]);
+        setMessages(prev => [...prev, { text: `Error: ${data.error}`, sender: 'bot' }]);
       } else {
-        setMessages((prev) => [...prev, { text: "Hubo un error procesando tu mensaje. La respuesta no es válida.", sender: 'bot' }]);
+        setMessages(prev => [...prev, { text: 'Hubo un error procesando tu mensaje.', sender: 'bot' }]);
       }
-
-    } catch (error) {
-      console.error('Error enviando mensaje:', error);
+    } catch {
       setIsTyping(false);
-      setMessages((prev) => [...prev, { text: "Lo siento, no pude conectarme con el servidor. Intenta nuevamente más tarde.", sender: 'bot' }]);
+      setMessages(prev => [...prev, {
+        text: 'Lo siento, no pude conectarme con el servidor. Intenta nuevamente.',
+        sender: 'bot',
+      }]);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
+    if (e.key === 'Enter') sendMessage();
   };
 
   return (
     <>
       {/* Botón flotante para abrir chat */}
-      <button 
-        className={`chat-toggle ${isOpen ? 'hidden' : ''}`} 
+      <button
+        className={`chat-toggle ${isOpen ? 'hidden' : ''}`}
         onClick={toggleChat}
         aria-label="Abrir chat"
       >
@@ -112,32 +129,32 @@ const ChatbotWidget = () => {
             </svg>
           </button>
         </div>
-        
+
         <div className="chat-messages">
           {messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.sender}`}>
               {msg.text}
             </div>
           ))}
-          
+
           {/* Indicador de escribiendo */}
           <div className={`chat-typing-indicator ${isTyping ? 'active' : ''}`}>
             <div className="chat-dot"></div>
             <div className="chat-dot"></div>
             <div className="chat-dot"></div>
           </div>
-          
+
           <div ref={messagesEndRef} />
         </div>
-        
+
         <div className="chat-input-container">
           <div className="chat-input">
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Escribe un mensaje..." 
+              placeholder="Escribe un mensaje..."
               autoComplete="off"
               ref={inputRef}
             />
